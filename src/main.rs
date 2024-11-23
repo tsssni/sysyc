@@ -85,7 +85,6 @@ lalrpop_mod! {
           let mode = match m.as_str() {
             "-koopa" => Mode::Koopa,
             "-riscv" => Mode::Riscv,
-            "-perf" => Mode::Perf,
             _ => return Err(Error::InvalidArgs),
           };
           Ok(Self {
