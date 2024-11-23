@@ -1,0 +1,13 @@
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  jump %0
+
+%0:
+  jump %end
+
+%end:
+  store 0, %ret
+  %1 = load %ret
+  ret %1
+}
