@@ -27,7 +27,7 @@ pub struct Stmt {
 
 #[derive(Debug)]
 pub struct Exp {
-    pub exp: EqExp,
+    pub exp: LOrExp,
 }
 
 #[derive(Debug)]
@@ -66,6 +66,17 @@ pub enum EqExp {
     EqRel(Box<EqExp>, EqOp, RelExp),
 }
 
+#[derive(Debug)]
+pub enum LAndExp {
+    Eq(EqExp),
+    LAndEq(Box<LAndExp>, EqExp),
+}
+
+#[derive(Debug)]
+pub enum LOrExp {
+    LAnd(LAndExp),
+    LOrLAnd(Box<LOrExp>, LAndExp),
+}
 
 #[derive(Debug)]
 pub enum UnaryOp {

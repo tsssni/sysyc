@@ -19,10 +19,12 @@ fun @main(): i32 {
   %13 = le %3, %12
   %14 = gt 1, %13
   %15 = ne %1, %14
+  %16 = and 0, %15
+  %17 = or 1, %16
   jump %end
 
 %end:
-  store %15, %ret
-  %16 = load %ret
-  ret %16
+  store %17, %ret
+  %18 = load %ret
+  ret %18
 }

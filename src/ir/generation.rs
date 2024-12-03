@@ -243,3 +243,39 @@ impl<'ast> GenerateIR<'ast> for EqExp {
         }
     }
 }
+
+impl<'ast> GenerateIR<'ast> for LAndExp {
+    type Out = Value;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Self::Eq(exp) => exp.generate(program, context),
+            Self::LAndEq(lhs, rhs) => {
+                let lhs = lhs.generate(program, context)?;
+                let rhs = rhs.generate(program, context)?;
+                let active_func = context.active_fcuntion();
+                let value = active_func.create_value(program).binary(BinaryOp::And, lhs, rhs);
+                active_func.push_instruction(program, value);
+                Ok(value)
+            }
+        }
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for LOrExp {
+    type Out = Value;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Self::LAnd(exp) => exp.generate(program, context),
+            Self::LOrLAnd(lhs, rhs) => {
+                let lhs = lhs.generate(program, context)?;
+                let rhs = rhs.generate(program, context)?;
+                let active_func = context.active_fcuntion();
+                let value = active_func.create_value(program).binary(BinaryOp::Or, lhs, rhs);
+                active_func.push_instruction(program, value);
+                Ok(value)
+            }
+        }
+    }
+}
