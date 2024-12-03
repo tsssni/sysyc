@@ -23,7 +23,7 @@ Block: Block = "{" <stmt: Stmt> "}" => Block { <> };
 
 Stmt: Stmt = "return" <Exp> ";" => Stmt{ exp: Box::new(<>) };
 
-Exp: Exp = <unary: UnaryExp> => Exp { <> };
+Exp: Exp = <exp: AddExp> => Exp { <> };
 
 PrimaryExp: PrimaryExp = {
   "(" <Exp> ")" => PrimaryExp::Exp(Box::new(<>)),

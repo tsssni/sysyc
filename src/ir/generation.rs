@@ -1,11 +1,10 @@
 use super::function::FunctionInfo;
 use super::{Result, Error};
 use super::context::Context;
-use super::value::ExpValue;
 use crate::ast::*;
-use koopa::ir::{FunctionData, Program, Type};
+use koopa::ir::{FunctionData, Program, Type, Value};
 use koopa::ir::builder_traits::*;
-use koopa::ir::values::{BinaryOp};
+use koopa::ir::values::BinaryOp;
 
 pub trait GenerateIR<'ast> {
     type Out;
@@ -91,7 +90,7 @@ impl<'ast> GenerateIR<'ast> for Stmt {
         if let None = context.active_fcuntion().return_value() {
             return Err(Error::ReturnInVoidFunction);
         }
-        let exp = self.exp.generate(program, context)?.value()?;
+        let exp = self.exp.generate(program, context)?;
 
         let active_func = context.active_fcuntion_mut();
         let jump = active_func.create_value(program).jump(active_func.end());
@@ -113,37 +112,37 @@ impl<'ast> GenerateIR<'ast> for Stmt {
 }
 
 impl<'ast> GenerateIR<'ast> for Exp {
-    type Out = ExpValue;
+    type Out = Value;
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
-        self.unary.generate(program, context)
+        self.exp.generate(program, context)
     }
 }
 
 impl<'ast> GenerateIR<'ast> for PrimaryExp {
-    type Out = ExpValue;
+    type Out = Value;
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         match self {
             Self::Exp(exp) => exp.generate(program, context),
-            Self::Number(number) => Ok(ExpValue::Int(
+            Self::Number(number) => Ok(
                 context
                 .active_fcuntion()
                 .create_value(program)
                 .integer(*number)
-            )),
+            ),
         }
     }
 }
 
 impl<'ast> GenerateIR<'ast> for UnaryExp {
-    type Out = ExpValue;
+    type Out = koopa::ir::Value;
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         match self {
             Self::Primary(exp) => exp.generate(program, context),
             Self::Unary(op, exp) => {
-                let exp = exp.generate(program, context)?.value()?;
+                let exp = exp.generate(program, context)?;
                 let active_func = context.active_fcuntion();
                 let zero = active_func.create_value(program).integer(0);
                 let value = match op {
@@ -152,7 +151,50 @@ impl<'ast> GenerateIR<'ast> for UnaryExp {
                     UnaryOp::Not => active_func.create_value(program).binary(BinaryOp::Eq, zero, exp),
                 };
                 active_func.push_instruction(program, value);
-                Ok(ExpValue::Int(value))
+                Ok(value)
+            }
+        }
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for MulExp {
+    type Out = Value;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Self::Unary(exp) => exp.generate(program, context),
+            Self::MulUnary(lhs, op, rhs) => {
+                let lhs = lhs.generate(program, context)?;
+                let rhs = rhs.generate(program, context)?;
+                let active_func = context.active_fcuntion();
+                let value = match op {
+                    MulOp::Mul => active_func.create_value(program).binary(BinaryOp::Mul, lhs, rhs),
+                    MulOp::Div => active_func.create_value(program).binary(BinaryOp::Div, lhs, rhs),
+                    MulOp::Mod => active_func.create_value(program).binary(BinaryOp::Mod, lhs, rhs),
+                };
+                active_func.push_instruction(program, value);
+                Ok(value)
+            }
+        }
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for AddExp {
+    type Out = Value;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Self::Mul(exp) => exp.generate(program, context),
+            Self::AddMul(lhs, op, rhs) => {
+                let lhs = lhs.generate(program, context)?;
+                let rhs = rhs.generate(program, context)?;
+                let active_func = context.active_fcuntion();
+                let value = match op {
+                    AddOp::Add => active_func.create_value(program).binary(BinaryOp::Add, lhs, rhs),
+                    AddOp::Sub => active_func.create_value(program).binary(BinaryOp::Sub, lhs, rhs),
+                };
+                active_func.push_instruction(program, value);
+                Ok(value)
             }
         }
     }
