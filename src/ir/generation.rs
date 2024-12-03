@@ -222,3 +222,24 @@ impl<'ast> GenerateIR<'ast> for RelExp {
         }
     }
 }
+
+impl<'ast> GenerateIR<'ast> for EqExp {
+    type Out = Value;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Self::Rel(exp) => exp.generate(program, context),
+            Self::EqRel(lhs, op, rhs) => {
+                let lhs = lhs.generate(program, context)?;
+                let rhs = rhs.generate(program, context)?;
+                let active_func = context.active_fcuntion();
+                let value = match op {
+                    EqOp::Eq => active_func.create_value(program).binary(BinaryOp::Eq, lhs, rhs),
+                    EqOp::Ne => active_func.create_value(program).binary(BinaryOp::NotEq, lhs, rhs),
+                };
+                active_func.push_instruction(program, value);
+                Ok(value)
+            }
+        }
+    }
+}

@@ -27,7 +27,7 @@ pub struct Stmt {
 
 #[derive(Debug)]
 pub struct Exp {
-    pub exp: RelExp,
+    pub exp: EqExp,
 }
 
 #[derive(Debug)]
@@ -43,16 +43,35 @@ pub enum UnaryExp {
 }
 
 #[derive(Debug)]
+pub enum MulExp {
+    Unary(UnaryExp),
+    MulUnary(Box<MulExp>, MulOp, UnaryExp),
+}
+
+#[derive(Debug)]
+pub enum AddExp {
+    Mul(MulExp),
+    AddMul(Box<AddExp>, AddOp, MulExp),
+}
+
+#[derive(Debug)]
+pub enum RelExp {
+    Add(AddExp),
+    RelAdd(Box<RelExp>, RelOp, AddExp),
+}
+
+#[derive(Debug)]
+pub enum EqExp {
+    Rel(RelExp),
+    EqRel(Box<EqExp>, EqOp, RelExp),
+}
+
+
+#[derive(Debug)]
 pub enum UnaryOp {
     Plus,
     Neg,
     Not,
-}
-
-#[derive(Debug)]
-pub enum MulExp {
-    Unary(UnaryExp),
-    MulUnary(Box<MulExp>, MulOp, UnaryExp),
 }
 
 #[derive(Debug)]
@@ -63,21 +82,9 @@ pub enum MulOp {
 }
 
 #[derive(Debug)]
-pub enum AddExp {
-    Mul(MulExp),
-    AddMul(Box<AddExp>, AddOp, MulExp),
-}
-
-#[derive(Debug)]
 pub enum AddOp {
     Add,
     Sub,
-}
-
-#[derive(Debug)]
-pub enum RelExp {
-    Add(AddExp),
-    RelAdd(Box<RelExp>, RelOp, AddExp),
 }
 
 #[derive(Debug)]
@@ -86,4 +93,10 @@ pub enum RelOp {
     Gt,
     Le,
     Ge,
+}
+
+#[derive(Debug)]
+pub enum EqOp {
+    Eq,
+    Ne,
 }

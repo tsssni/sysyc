@@ -23,7 +23,7 @@ Block: Block = "{" <stmt: Stmt> "}" => Block { <> };
 
 Stmt: Stmt = "return" <Exp> ";" => Stmt{ exp: Box::new(<>) };
 
-Exp: Exp = <exp: RelExp> => Exp { <> };
+Exp: Exp = <exp: EqExp> => Exp { <> };
 
 PrimaryExp: PrimaryExp = {
   "(" <Exp> ")" => PrimaryExp::Exp(Box::new(<>)),
@@ -35,15 +35,30 @@ UnaryExp: UnaryExp = {
   <op: UnaryOp> <exp: UnaryExp> => UnaryExp::Unary(op, Box::new(exp)),
 }
 
+MulExp: MulExp = {
+  UnaryExp => MulExp::Unary(<>),
+  <lhs: MulExp> <op: MulOp> <rhs: UnaryExp> => MulExp::MulUnary(Box::new(lhs), op, rhs),
+}
+
+AddExp: AddExp = {
+  MulExp => AddExp::Mul(<>),
+  <lhs: AddExp> <op: AddOp> <rhs: MulExp> => AddExp::AddMul(Box::new(lhs), op, rhs),
+}
+
+RelExp: RelExp = {
+  AddExp => RelExp::Add(<>),
+  <lhs: RelExp> <op: RelOp> <rhs: AddExp> => RelExp::RelAdd(Box::new(lhs), op, rhs),
+}
+
+EqExp: EqExp = {
+  RelExp => EqExp::Rel(<>),
+  <lhs: EqExp> <op: EqOp> <rhs: RelExp> => EqExp::EqRel(Box::new(lhs), op, rhs),
+}
+
 UnaryOp: UnaryOp = {
   "+" => UnaryOp::Plus,
   "-" => UnaryOp::Neg,
   "!" => UnaryOp::Not,
-}
-
-MulExp: MulExp = {
-  UnaryExp => MulExp::Unary(<>),
-  <lhs: MulExp> <op: MulOp> <rhs: UnaryExp> => MulExp::MulUnary(Box::new(lhs), op, rhs),
 }
 
 MulOp: MulOp = {
@@ -52,19 +67,9 @@ MulOp: MulOp = {
   "%" => MulOp::Mod,
 }
 
-AddExp: AddExp = {
-  MulExp => AddExp::Mul(<>),
-  <lhs: AddExp> <op: AddOp> <rhs: MulExp> => AddExp::AddMul(Box::new(lhs), op, rhs),
-}
-
 AddOp: AddOp = {
   "+" => AddOp::Add,
   "-" => AddOp::Sub,
-}
-
-RelExp: RelExp = {
-  AddExp => RelExp::Add(<>),
-  <lhs: RelExp> <op: RelOp> <rhs: AddExp> => RelExp::RelAdd(Box::new(lhs), op, rhs),
 }
 
 RelOp: RelOp = {
@@ -72,6 +77,11 @@ RelOp: RelOp = {
   ">" => RelOp::Gt,
   "<=" => RelOp::Le,
   ">=" => RelOp::Ge,
+}
+
+EqOp: EqOp = {
+  "==" => EqOp::Eq,
+  "!=" => EqOp::Ne,
 }
 
 Number: i32 = <num: IntConst> => <>;
