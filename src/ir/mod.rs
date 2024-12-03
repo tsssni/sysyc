@@ -32,5 +32,6 @@ impl fmt::Display for Error {
 pub fn generate_program(comp_unit: &CompUnit) -> Result<Program> {
     let mut program = Program::new();
     comp_unit.generate(&mut program, &mut Context::new())?;
+    println!("{:?}", comp_unit);
     Ok(program)
 }
