@@ -1,10 +1,11 @@
 use super::function::FunctionInfo;
-use super::Error;
-use super::Result;
+use super::{Result, Error};
 use super::context::Context;
+use super::value::ExpValue;
 use crate::ast::*;
-use koopa::ir::builder_traits::*;
 use koopa::ir::{FunctionData, Program, Type};
+use koopa::ir::builder_traits::*;
+use koopa::ir::values::{BinaryOp};
 
 pub trait GenerateIR<'ast> {
     type Out;
@@ -90,22 +91,69 @@ impl<'ast> GenerateIR<'ast> for Stmt {
         if let None = context.active_fcuntion().return_value() {
             return Err(Error::ReturnInVoidFunction);
         }
+        let exp = self.exp.generate(program, context)?.value()?;
 
-        let info = &mut context.active_fcuntion_mut();
-        let jump = info.create_value(program).jump(info.end());
-        info.push_instruction(program, jump);
-        info.push_basic_block(program, info.end());
-        let value = info.return_value().map(|alloc| {
-            let zero = info.create_value(program).integer(0);
-            let store = info.create_value(program).store(zero, alloc);
-            info.push_instruction(program, store);
+        let active_func = context.active_fcuntion_mut();
+        let jump = active_func.create_value(program).jump(active_func.end());
+        active_func.push_instruction(program, jump);
+        active_func.push_basic_block(program, active_func.end());
 
-            let value = info.create_value(program).load(alloc);
-            info.push_instruction(program, value);
+        let value = active_func.return_value().map(|alloc| {
+            let store = active_func.create_value(program).store(exp, alloc);
+            active_func.push_instruction(program, store);
+
+            let value = active_func.create_value(program).load(alloc);
+            active_func.push_instruction(program, value);
             value
         });
-        let ret = info.create_value(program).ret(value);
-        info.push_instruction(program, ret);
+        let ret = active_func.create_value(program).ret(value);
+        active_func.push_instruction(program, ret);
         Ok(())
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for Exp {
+    type Out = ExpValue;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        self.unary.generate(program, context)
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for PrimaryExp {
+    type Out = ExpValue;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Self::Exp(exp) => exp.generate(program, context),
+            Self::Number(number) => Ok(ExpValue::Int(
+                context
+                .active_fcuntion()
+                .create_value(program)
+                .integer(*number)
+            )),
+        }
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for UnaryExp {
+    type Out = ExpValue;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Self::Primary(exp) => exp.generate(program, context),
+            Self::Unary(op, exp) => {
+                let exp = exp.generate(program, context)?.value()?;
+                let active_func = context.active_fcuntion();
+                let zero = active_func.create_value(program).integer(0);
+                let value = match op {
+                    UnaryOp::Plus => active_func.create_value(program).binary(BinaryOp::Add, zero, exp),
+                    UnaryOp::Neg => active_func.create_value(program).binary(BinaryOp::Sub, zero, exp),
+                    UnaryOp::Not => active_func.create_value(program).binary(BinaryOp::Eq, zero, exp),
+                };
+                active_func.push_instruction(program, value);
+                Ok(ExpValue::Int(value))
+            }
+        }
     }
 }
