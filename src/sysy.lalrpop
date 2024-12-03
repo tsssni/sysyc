@@ -23,7 +23,7 @@ Block: Block = "{" <stmt: Stmt> "}" => Block { <> };
 
 Stmt: Stmt = "return" <Exp> ";" => Stmt{ exp: Box::new(<>) };
 
-Exp: Exp = <exp: AddExp> => Exp { <> };
+Exp: Exp = <exp: RelExp> => Exp { <> };
 
 PrimaryExp: PrimaryExp = {
   "(" <Exp> ")" => PrimaryExp::Exp(Box::new(<>)),
@@ -60,6 +60,18 @@ AddExp: AddExp = {
 AddOp: AddOp = {
   "+" => AddOp::Add,
   "-" => AddOp::Sub,
+}
+
+RelExp: RelExp = {
+  AddExp => RelExp::Add(<>),
+  <lhs: RelExp> <op: RelOp> <rhs: AddExp> => RelExp::RelAdd(Box::new(lhs), op, rhs),
+}
+
+RelOp: RelOp = {
+  "<" => RelOp::Lt,
+  ">" => RelOp::Gt,
+  "<=" => RelOp::Le,
+  ">=" => RelOp::Ge,
 }
 
 Number: i32 = <num: IntConst> => <>;

@@ -199,3 +199,26 @@ impl<'ast> GenerateIR<'ast> for AddExp {
         }
     }
 }
+
+impl<'ast> GenerateIR<'ast> for RelExp {
+    type Out = Value;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Self::Add(exp) => exp.generate(program, context),
+            Self::RelAdd(lhs, op, rhs) => {
+                let lhs = lhs.generate(program, context)?;
+                let rhs = rhs.generate(program, context)?;
+                let active_func = context.active_fcuntion();
+                let value = match op {
+                    RelOp::Lt => active_func.create_value(program).binary(BinaryOp::Lt, lhs, rhs),
+                    RelOp::Gt => active_func.create_value(program).binary(BinaryOp::Gt, lhs, rhs),
+                    RelOp::Le => active_func.create_value(program).binary(BinaryOp::Le, lhs, rhs),
+                    RelOp::Ge => active_func.create_value(program).binary(BinaryOp::Ge, lhs, rhs),
+                };
+                active_func.push_instruction(program, value);
+                Ok(value)
+            }
+        }
+    }
+}

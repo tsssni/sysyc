@@ -27,7 +27,7 @@ pub struct Stmt {
 
 #[derive(Debug)]
 pub struct Exp {
-    pub exp: AddExp,
+    pub exp: RelExp,
 }
 
 #[derive(Debug)]
@@ -72,4 +72,18 @@ pub enum AddExp {
 pub enum AddOp {
     Add,
     Sub,
+}
+
+#[derive(Debug)]
+pub enum RelExp {
+    Add(AddExp),
+    RelAdd(Box<RelExp>, RelOp, AddExp),
+}
+
+#[derive(Debug)]
+pub enum RelOp {
+    Lt,
+    Gt,
+    Le,
+    Ge,
 }
