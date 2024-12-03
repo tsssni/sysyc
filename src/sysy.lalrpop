@@ -41,6 +41,27 @@ UnaryOp: UnaryOp = {
   "!" => UnaryOp::Not,
 }
 
+MulExp: MulExp = {
+  UnaryExp => MulExp::Unary(<>),
+  <lhs: MulExp> <op: MulOp> <rhs: UnaryExp> => MulExp::MulUnary(Box::new(lhs), op, rhs),
+}
+
+MulOp: MulOp = {
+  "*" => MulOp::Mul,
+  "/" => MulOp::Div,
+  "%" => MulOp::Mod,
+}
+
+AddExp: AddExp = {
+  MulExp => AddExp::Mul(<>),
+  <lhs: AddExp> <op: AddOp> <rhs: MulExp> => AddExp::AddMul(Box::new(lhs), op, rhs),
+}
+
+AddOp: AddOp = {
+  "+" => AddOp::Add,
+  "-" => AddOp::Sub,
+}
+
 Number: i32 = <num: IntConst> => <>;
 
 Ident: String = r"[_a-zA-Z][_a-zA-Z0-9]*" => <>.to_string();
