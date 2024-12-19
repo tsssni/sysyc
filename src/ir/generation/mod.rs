@@ -33,7 +33,7 @@ impl<'ast> GenerateIR<'ast> for FuncDef {
 
         let entry = data.dfg_mut().new_bb().basic_block(Some("%entry".into()));
         let end = data.dfg_mut().new_bb().basic_block(Some("%end".into()));
-        let active = data.dfg_mut().new_bb().basic_block(Some("%body".into()));
+        let active = data.dfg_mut().new_bb().basic_block(None);
 
         let mut ret_val = None;
         match self.func_type {

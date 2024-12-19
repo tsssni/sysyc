@@ -16,6 +16,7 @@ pub enum BlockItem {
 pub enum Stmt {
     Assign(Assign),
     Sblock(Sblock),
+    If(If),
     Return(Return),
 }
 
@@ -26,13 +27,15 @@ pub struct Assign {
 }
 
 #[derive(Debug)]
-pub struct Sexp {
-    pub exp: Option<Exp>,
+pub struct Sblock {
+    pub block: Block,
 }
 
 #[derive(Debug)]
-pub struct Sblock {
-    pub block: Block,
+pub struct If {
+    pub exp: Exp,
+    pub then_block: Block,
+    pub else_block: Option<Block>,
 }
 
 #[derive(Debug)]

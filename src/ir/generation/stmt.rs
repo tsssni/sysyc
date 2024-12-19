@@ -36,6 +36,7 @@ impl<'ast> GenerateIR<'ast> for Stmt {
         match self {
             Stmt::Assign(assign) => assign.generate(program, context),
             Stmt::Sblock(sblock) => sblock.generate(program, context),
+            Stmt::If(sif) => sif.generate(program, context),
             Stmt::Return(ret) => ret.generate(program, context),
         }
     }
@@ -57,6 +58,37 @@ impl<'ast> GenerateIR<'ast> for Sblock {
     type Out = ();
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         self.block.generate(program, context)
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for If {
+    type Out = ();
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        let exp = self.exp.generate(program, context)?;
+        let active_func = context.active_fcuntion_mut();
+
+        let then_bb = active_func.create_basic_block(program, None);
+        let else_bb = active_func.create_basic_block(program, None);
+        let next_bb = active_func.create_basic_block(program, None);
+        let br = active_func.create_value(program).branch(exp, then_bb, else_bb);
+        active_func.push_instruction(program, br);
+
+        active_func.push_basic_block(program, then_bb);
+        self.then_block.generate(program, context)?;
+        let active_func = context.active_fcuntion_mut();
+        let then_jump = active_func.create_value(program).jump(next_bb);
+        active_func.push_instruction(program, then_jump);
+
+        active_func.push_basic_block(program, else_bb);
+        if let Some(else_block) = &self.else_block {
+            else_block.generate(program, context)?;
+        }
+        let active_func = context.active_fcuntion_mut();
+        let else_jump = active_func.create_value(program).jump(next_bb);
+        active_func.push_instruction(program, else_jump);
+        
+        active_func.push_basic_block(program, next_bb);
+        Ok(())
     }
 }
 

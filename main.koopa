@@ -5,44 +5,76 @@ fun @main(): i32 {
   @v = alloc i32
   @w = alloc i32
   @w_0 = alloc i32
-  jump %body
+  @u_0 = alloc i32
+  @u_1 = alloc i32
+  jump %0
 
-%body:
-  %0 = and 1, 0
-  %1 = or 1, %0
-  %2 = ne 1, 4
-  %3 = eq 1, %2
-  %4 = gt 4, 5
-  %5 = ge %4, 1
-  %6 = le %5, 4
-  %7 = gt 11, %6
-  %8 = sub 514, 1919
-  %9 = mod 114, 80
-  %10 = div 6324, %9
-  %11 = mul %10, 19
-  %12 = add %8, %11
-  store %12, @u
-  %13 = add 0, 19
-  %14 = add 0, %13
-  %15 = eq 0, %14
-  %16 = sub 0, %15
-  store %16, @v
-  %17 = div 114, 19
-  store %17, @w
-  %18 = mod 514, 19
-  store %18, @w
+%1:
+  %2 = and 1, 0
+  %3 = or 1, %2
+  %4 = ne 1, 4
+  %5 = eq 1, %4
+  %6 = gt 4, 5
+  %7 = ge %6, 1
+  %8 = le %7, 4
+  %9 = gt 11, %8
+  %10 = sub 514, 1919
+  %11 = mod 114, 80
+  %12 = div 6324, %11
+  %13 = mul %12, 19
+  %14 = add %10, %13
+  store %14, @u
+  %15 = add 0, 19
+  %16 = add 0, %15
+  %17 = eq 0, %16
+  %18 = sub 0, %17
+  store %18, @v
   %19 = div 114, 19
-  store %19, @w_0
-  %20 = load @u
-  %21 = load @w_0
-  %22 = mul %20, %21
-  store %22, @u
-  %23 = load @w
-  %24 = mul %23, 414
+  store %19, @w
+  %20 = load @w
+  %21 = gt %20, 5
+  br %21, %22, %23
+
+%22:
+  %24 = mod 514, 19
+  store %24, @w
+  %25 = div 114, 19
+  store %25, @w_0
+  %26 = load @u
+  %27 = load @w_0
+  %28 = mul %26, %27
+  store %28, @u
+  jump %29
+
+%23:
+  jump %29
+
+%29:
+  %30 = load @w
+  %31 = gt %30, 5
+  br %31, %32, %33
+
+%32:
+  %34 = load @u
+  %35 = load @v
+  %36 = mul %34, %35
+  store %36, @u_0
+  jump %0
+
+%33:
+  %37 = load @u
+  %38 = load @w
+  %39 = mul %37, %38
+  store %39, @u_1
+  jump %0
+
+%0:
+  %40 = load @w
+  %41 = mul %40, 414
   jump %end
 
 %end:
-  store %24, %ret
-  %25 = load %ret
-  ret %25
+  store %41, %ret
+  %42 = load %ret
+  ret %42
 }

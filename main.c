@@ -19,10 +19,15 @@ int main()
   int v = (- ! + + 19);
   int w;
   w = 114 / 19;
-  {
+  if (w > 5) {
     w = 514 % 19;
     int w = 114 / 19;
     u = u * w;
+  }
+  if (w > 5) {
+    int u = u * v;
+  } else {
+    int u = u * w;
   }
   return w * 414;
 }
