@@ -139,5 +139,6 @@ BlockItem: BlockItem = {
 
 Stmt: Stmt = {
   <lval: LVal> "=" <exp: Exp> ";" => Stmt::Assign(Assign{ <> }),
+  <block: Block> => Stmt::Sblock(Sblock{ <> }),
   "return" <exp: Exp> ";" => Stmt::Return(Return{ <> }),
 }

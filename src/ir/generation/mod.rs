@@ -33,7 +33,7 @@ impl<'ast> GenerateIR<'ast> for FuncDef {
 
         let entry = data.dfg_mut().new_bb().basic_block(Some("%entry".into()));
         let end = data.dfg_mut().new_bb().basic_block(Some("%end".into()));
-        let active = data.dfg_mut().new_bb().basic_block(None);
+        let active = data.dfg_mut().new_bb().basic_block(Some("%body".into()));
 
         let mut ret_val = None;
         match self.func_type {
@@ -50,9 +50,6 @@ impl<'ast> GenerateIR<'ast> for FuncDef {
         if let Some(ret_val) = info.return_value() {
             info.push_instruction(program, ret_val);
         }
-
-        let jump = info.create_value(program).jump(active);
-        info.push_instruction(program, jump);
         info.push_basic_block(program, active);
 
         context.push();

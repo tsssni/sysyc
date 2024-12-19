@@ -15,6 +15,7 @@ pub enum BlockItem {
 #[derive(Debug)]
 pub enum Stmt {
     Assign(Assign),
+    Sblock(Sblock),
     Return(Return),
 }
 
@@ -25,6 +26,17 @@ pub struct Assign {
 }
 
 #[derive(Debug)]
+pub struct Sexp {
+    pub exp: Option<Exp>,
+}
+
+#[derive(Debug)]
+pub struct Sblock {
+    pub block: Block,
+}
+
+#[derive(Debug)]
 pub struct Return {
     pub exp: Exp,
 }
+

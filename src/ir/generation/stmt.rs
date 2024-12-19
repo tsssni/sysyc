@@ -35,6 +35,7 @@ impl<'ast> GenerateIR<'ast> for Stmt {
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         match self {
             Stmt::Assign(assign) => assign.generate(program, context),
+            Stmt::Sblock(sblock) => sblock.generate(program, context),
             Stmt::Return(ret) => ret.generate(program, context),
         }
     }
@@ -52,6 +53,13 @@ impl<'ast> GenerateIR<'ast> for Assign {
     }
 }
 
+impl<'ast> GenerateIR<'ast> for Sblock {
+    type Out = ();
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        self.block.generate(program, context)
+    }
+}
+
 impl<'ast> GenerateIR<'ast> for Return {
     type Out = ();
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
@@ -62,6 +70,7 @@ impl<'ast> GenerateIR<'ast> for Return {
 
         let active_func = context.active_fcuntion_mut();
         let jump = active_func.create_value(program).jump(active_func.end());
+        active_func.finish_allocate(program);
         active_func.push_instruction(program, jump);
         active_func.push_basic_block(program, active_func.end());
 

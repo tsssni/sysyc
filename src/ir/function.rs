@@ -80,4 +80,10 @@ impl FunctionInfo {
         self.insert_instruction(program, self.entry, alloc);
         alloc
     }
+
+    pub fn finish_allocate(&self, program: &mut Program) -> Value {
+        let jump = self.create_value(program).jump(self.active);
+        self.insert_instruction(program, self.entry, jump);
+        jump
+    }
 }
