@@ -28,7 +28,13 @@ impl<'ast> GenerateIR<'ast> for PrimaryExp {
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         match self {
             Self::Exp(exp) => exp.generate(program, context),
-            Self::LVal(lval) => context.get_value(&lval.id),
+            Self::LVal(lval) => {
+                let lval = context.get_value(&lval.id)?;
+                let active_func = context.active_fcuntion();
+                let load = active_func.create_value(program).load(lval);
+                active_func.push_instruction(program, load);
+                Ok(load)
+            },
             Self::Number(number) => Ok(
                 context
                 .active_fcuntion()

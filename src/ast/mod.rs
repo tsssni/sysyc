@@ -38,6 +38,18 @@ pub enum BlockItem {
 }
 
 #[derive(Debug)]
-pub struct Stmt {
-    pub exp: Box<Exp>,
+pub enum Stmt {
+    Assign(Assign),
+    Return(Return),
+}
+
+#[derive(Debug)]
+pub struct Assign {
+    pub lval: LVal,
+    pub exp: Exp,
+}
+
+#[derive(Debug)]
+pub struct Return {
+    pub exp: Exp,
 }

@@ -102,6 +102,28 @@ impl<'ast> GenerateIR<'ast> for Stmt {
     type Out = ();
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        match self {
+            Stmt::Assign(assign) => assign.generate(program, context),
+            Stmt::Return(ret) => ret.generate(program, context),
+        }
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for Assign {
+    type Out = ();
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        let exp = self.exp.generate(program, context)?;
+        let lval = context.get_value(&self.lval.id)?;
+        let active_func = context.active_fcuntion();
+        let store = active_func.create_value(program).store(exp, lval);
+        active_func.push_instruction(program, store);
+        Ok(())
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for Return {
+    type Out = ();
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         if let None = context.active_fcuntion().return_value() {
             return Err(Error::ReturnInVoidFunction);
         }

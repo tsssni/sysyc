@@ -1,9 +1,16 @@
+use crate::ast::Exp;
 use crate::ast::exp::ConstExp;
 use crate::ast::BType;
 
 #[derive(Debug)]
-pub struct Decl {
-    pub decl: ConstDecl,
+pub struct LVal {
+    pub id: String,
+}
+
+#[derive(Debug)]
+pub enum Decl {
+    Const(ConstDecl),
+    Var(VarDecl),
 }
 
 #[derive(Debug)]
@@ -24,6 +31,18 @@ pub struct ConstInitVal {
 }
 
 #[derive(Debug)]
-pub struct LVal {
+pub struct VarDecl {
+    pub decl_type: BType,
+    pub defs: Vec<VarDef>,
+}
+
+#[derive(Debug)]
+pub struct VarDef {
     pub id: String,
+    pub val: Option<InitVal>,
+}
+
+#[derive(Debug)]
+pub struct InitVal {
+    pub exp: Exp,
 }

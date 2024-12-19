@@ -2,6 +2,9 @@ fun @main(): i32 {
 %entry:
   %ret = alloc i32
   jump %0
+  @u = alloc i32
+  @v = alloc i32
+  @w = alloc i32
 
 %0:
   %1 = and 1, 0
@@ -17,18 +20,20 @@ fun @main(): i32 {
   %11 = div 6324, %10
   %12 = mul %11, 19
   %13 = add %9, %12
+  store %13, @u
   %14 = add 0, 19
   %15 = add 0, %14
   %16 = eq 0, %15
   %17 = sub 0, %16
-  %18 = add %2, %4
-  %19 = add %18, %8
-  %20 = add %19, %13
-  %21 = add %20, %17
+  store %17, @v
+  %18 = mul 114, 514
+  store %18, @w
+  %19 = load @w
+  %20 = mul %19, 414
   jump %end
 
 %end:
-  store %21, %ret
-  %22 = load %ret
-  ret %22
+  store %20, %ret
+  %21 = load %ret
+  ret %21
 }
