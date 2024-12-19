@@ -1,19 +1,15 @@
+mod parser;
 mod ast;
-mod codegen;
 mod ir;
+mod codegen;
 
+use parser::sysy::CompUnitParser;
 use koopa::back::KoopaGenerator;
-use lalrpop_util::lalrpop_mod;
 use std::env::args;
 use std::fs::read_to_string;
 use std::process::exit;
 use std::io;
 use std::fmt;
-
-lalrpop_mod! {
-    #[allow(clippy::all)]
-    sysy
-}
 
 fn main() {
     if let Err(err) = run() {
@@ -30,7 +26,7 @@ fn run() -> Result<(), Error> {
     } = CommandLineArgs::parse()?;
 
     let input = read_to_string(input).map_err(Error::File)?;
-    let comp_unit = sysy::CompUnitParser::new()
+    let comp_unit = CompUnitParser::new()
         .parse(&input)
         .map_err(|_| Error::Parse)?;
     let program = ir::generate_program(&comp_unit).map_err(Error::Generate)?;
