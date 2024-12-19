@@ -1,8 +1,10 @@
 pub mod exp;
 pub mod var;
+pub mod stmt;
 
 pub use exp::*;
 pub use var::*;
+pub use stmt::*;
 
 #[derive(Debug)]
 pub struct CompUnit {
@@ -24,32 +26,4 @@ pub enum FuncType {
 #[derive(Debug)]
 pub enum BType {
     Int
-}
-
-#[derive(Debug)]
-pub struct Block {
-    pub items: Vec<BlockItem>,
-}
-
-#[derive(Debug)]
-pub enum BlockItem {
-    Decl(Decl),
-    Stmt(Stmt),
-}
-
-#[derive(Debug)]
-pub enum Stmt {
-    Assign(Assign),
-    Return(Return),
-}
-
-#[derive(Debug)]
-pub struct Assign {
-    pub lval: LVal,
-    pub exp: Exp,
-}
-
-#[derive(Debug)]
-pub struct Return {
-    pub exp: Exp,
 }

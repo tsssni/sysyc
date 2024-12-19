@@ -26,7 +26,7 @@ fn concat_parsers(files: &[&str], out: &str) -> io::Result<()> {
 }
 
 fn main() -> io::Result<()> {
-    concat_parsers(&["mod","exp","var",],"sysy")?;
+    concat_parsers(&["mod","exp","var","stmt"],"sysy")?;
     lalrpop::Configuration::new().process_file("src/parser/sysy.lalrpop").unwrap();
     Ok(())
 }

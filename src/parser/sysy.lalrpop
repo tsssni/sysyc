@@ -21,18 +21,6 @@ FuncType: FuncType = "int" => FuncType::Int;
 
 BType: BType = "int" => BType::Int;
 
-Block: Block = "{" <items: (<BlockItem>)*> "}" => Block { <> };
-
-BlockItem: BlockItem = {
-  Decl => BlockItem::Decl(<>),
-  Stmt => BlockItem::Stmt(<>),
-}
-
-Stmt: Stmt = {
-  <lval: LVal> "=" <exp: Exp> ";" => Stmt::Assign(Assign{ <> }),
-  "return" <exp: Exp> ";" => Stmt::Return(Return{ <> }),
-}
-
 Number: i32 = <num: IntConst> => <>;
 
 Ident: String = r"[_a-zA-Z][_a-zA-Z0-9]*" => <>.to_string();
@@ -141,3 +129,15 @@ VarDecl: VarDecl = <decl_type: BType> <def: VarDef> <mut defs: ("," <VarDef>)*> 
 VarDef: VarDef = <id: Ident> <val: ("=" <InitVal>)?> => VarDef { <> };
 
 InitVal: InitVal = <exp: Exp> => InitVal { <> };
+
+Block: Block = "{" <items: (<BlockItem>)*> "}" => Block { <> };
+
+BlockItem: BlockItem = {
+  Decl => BlockItem::Decl(<>),
+  Stmt => BlockItem::Stmt(<>),
+}
+
+Stmt: Stmt = {
+  <lval: LVal> "=" <exp: Exp> ";" => Stmt::Assign(Assign{ <> }),
+  "return" <exp: Exp> ";" => Stmt::Return(Return{ <> }),
+}

@@ -1,0 +1,11 @@
+Block: Block = "{" <items: (<BlockItem>)*> "}" => Block { <> };
+
+BlockItem: BlockItem = {
+  Decl => BlockItem::Decl(<>),
+  Stmt => BlockItem::Stmt(<>),
+}
+
+Stmt: Stmt = {
+  <lval: LVal> "=" <exp: Exp> ";" => Stmt::Assign(Assign{ <> }),
+  "return" <exp: Exp> ";" => Stmt::Return(Return{ <> }),
+}
