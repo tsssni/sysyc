@@ -17,6 +17,7 @@ pub enum Stmt {
     Assign(Assign),
     Sblock(Sblock),
     If(If),
+    While(While),
     Return(Return),
 }
 
@@ -33,9 +34,15 @@ pub struct Sblock {
 
 #[derive(Debug)]
 pub struct If {
-    pub exp: Exp,
+    pub cond: Exp,
     pub then_block: Block,
     pub else_block: Option<Block>,
+}
+
+#[derive(Debug)]
+pub struct While {
+    pub cond: Exp,
+    pub block: Block,
 }
 
 #[derive(Debug)]

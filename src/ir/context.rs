@@ -27,11 +27,11 @@ impl<'ast> Context<'ast> {
         self.value_blocks.last_mut().unwrap()
     }
 
-    pub fn active_fcuntion(&self) -> &FunctionInfo {
+    pub fn active_function(&self) -> &FunctionInfo {
         self.active_fcuntion.as_ref().unwrap()
     }
 
-    pub fn active_fcuntion_mut(&mut self) -> &mut FunctionInfo {
+    pub fn active_function_mut(&mut self) -> &mut FunctionInfo {
         self.active_fcuntion.as_mut().unwrap()
     }
 

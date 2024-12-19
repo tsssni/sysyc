@@ -140,6 +140,7 @@ BlockItem: BlockItem = {
 Stmt: Stmt = {
   <lval: LVal> "=" <exp: Exp> ";" => Stmt::Assign(Assign{ <> }),
   <block: Block> => Stmt::Sblock(Sblock{ <> }),
-  "if" "(" <exp: Exp> ")" <then_block: Block> <else_block: ("else" <Block>)?> => Stmt::If(If{ <> }),
+  "if" "(" <cond: Exp> ")" <then_block: Block> <else_block: ("else" <Block>)?> => Stmt::If(If{ <> }),
+  "while" "(" <cond:Exp> ")" <block: Block> => Stmt::While(While{ <> }),
   "return" <exp: Exp> ";" => Stmt::Return(Return{ <> }),
 }

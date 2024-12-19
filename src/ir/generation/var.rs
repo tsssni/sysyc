@@ -61,7 +61,7 @@ impl<'ast> GenerateIR<'ast> for VarDef {
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         let val = self.val.as_ref().map(|v| v.generate(program, context));
-        let active_func = context.active_fcuntion();
+        let active_func = context.active_function();
         let alloc = active_func.allocate(program, Type::get_i32(), Some(&self.id));
         if let Some(val) = val {
             let store = active_func.create_value(program).store(val?, alloc);
