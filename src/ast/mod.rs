@@ -1,6 +1,8 @@
 pub mod exp;
+pub mod var;
 
 pub use exp::*;
+pub use var::*;
 
 #[derive(Debug)]
 pub struct CompUnit {
@@ -20,8 +22,19 @@ pub enum FuncType {
 }
 
 #[derive(Debug)]
+pub enum BType {
+    Int
+}
+
+#[derive(Debug)]
 pub struct Block {
-    pub stmt: Stmt,
+    pub items: Vec<BlockItem>,
+}
+
+#[derive(Debug)]
+pub enum BlockItem {
+    Decl(Decl),
+    Stmt(Stmt),
 }
 
 #[derive(Debug)]

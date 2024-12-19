@@ -1,7 +1,10 @@
 Exp: Exp = <exp: LOrExp> => Exp { <> };
 
+ConstExp: ConstExp = <exp: Exp> => ConstExp { <> };
+
 PrimaryExp: PrimaryExp = {
   "(" <Exp> ")" => PrimaryExp::Exp(Box::new(<>)),
+  LVal => PrimaryExp::LVal(<>),
   Number => PrimaryExp::Number(<>),
 }
 

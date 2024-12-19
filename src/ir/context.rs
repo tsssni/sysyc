@@ -1,4 +1,5 @@
-use super::{function::FunctionInfo, Error, Result};
+use crate::ir::{Error, Result};
+use crate::ir::function::FunctionInfo;
 use std::vec::Vec;
 use std::collections::HashMap;
 use koopa::ir::{Value, Function};

@@ -19,7 +19,14 @@ FuncDef: FuncDef = {
 
 FuncType: FuncType = "int" => FuncType::Int;
 
-Block: Block = "{" <stmt: Stmt> "}" => Block { <> };
+BType: BType = "int" => BType::Int;
+
+Block: Block = "{" <items: (<BlockItem>)*> "}" => Block { <> };
+
+BlockItem: BlockItem = {
+  Decl => BlockItem::Decl(<>),
+  Stmt => BlockItem::Stmt(<>),
+}
 
 Stmt: Stmt = "return" <Exp> ";" => Stmt{ exp: Box::new(<>) };
 

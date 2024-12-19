@@ -1,0 +1,12 @@
+Decl: Decl = <decl: ConstDecl> => Decl { <> };
+
+ConstDecl: ConstDecl = "const" <decl_type: BType> <def: ConstDef> <mut defs: ("," <ConstDef>)*> ";" => {
+  defs.insert(0, def);
+  ConstDecl { decl_type, defs }
+};
+
+ConstDef: ConstDef = <id: Ident> "=" <val: ConstInitVal> => ConstDef { <> };
+
+ConstInitVal: ConstInitVal = <exp: ConstExp> => ConstInitVal { <> };
+
+LVal: LVal = <id: Ident> => LVal { <> };

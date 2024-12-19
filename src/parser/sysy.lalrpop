@@ -19,7 +19,14 @@ FuncDef: FuncDef = {
 
 FuncType: FuncType = "int" => FuncType::Int;
 
-Block: Block = "{" <stmt: Stmt> "}" => Block { <> };
+BType: BType = "int" => BType::Int;
+
+Block: Block = "{" <items: (<BlockItem>)*> "}" => Block { <> };
+
+BlockItem: BlockItem = {
+  Decl => BlockItem::Decl(<>),
+  Stmt => BlockItem::Stmt(<>),
+}
 
 Stmt: Stmt = "return" <Exp> ";" => Stmt{ exp: Box::new(<>) };
 
@@ -35,8 +42,11 @@ IntConst: i32 = {
 
 Exp: Exp = <exp: LOrExp> => Exp { <> };
 
+ConstExp: ConstExp = <exp: Exp> => ConstExp { <> };
+
 PrimaryExp: PrimaryExp = {
   "(" <Exp> ")" => PrimaryExp::Exp(Box::new(<>)),
+  LVal => PrimaryExp::LVal(<>),
   Number => PrimaryExp::Number(<>),
 }
 
@@ -103,3 +113,16 @@ EqOp: EqOp = {
   "==" => EqOp::Eq,
   "!=" => EqOp::Ne,
 }
+
+Decl: Decl = <decl: ConstDecl> => Decl { <> };
+
+ConstDecl: ConstDecl = "const" <decl_type: BType> <def: ConstDef> <mut defs: ("," <ConstDef>)*> ";" => {
+  defs.insert(0, def);
+  ConstDecl { decl_type, defs }
+};
+
+ConstDef: ConstDef = <id: Ident> "=" <val: ConstInitVal> => ConstDef { <> };
+
+ConstInitVal: ConstInitVal = <exp: ConstExp> => ConstInitVal { <> };
+
+LVal: LVal = <id: Ident> => LVal { <> };

@@ -1,11 +1,19 @@
+use super::var::LVal;
+
 #[derive(Debug)]
 pub struct Exp {
     pub exp: LOrExp,
 }
 
 #[derive(Debug)]
+pub struct ConstExp {
+    pub exp: Exp,
+}
+
+#[derive(Debug)]
 pub enum PrimaryExp {
     Exp(Box<Exp>),
+    LVal(LVal),
     Number(i32),
 }
 
