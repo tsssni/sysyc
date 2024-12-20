@@ -1,26 +1,13 @@
+Decl: Decl = <decl_type: BType> <def: Def> <mut defs: ("," <Def>)*> ";" => {
+  defs.insert(0, def);
+  Decl { decl_type, defs }
+};
+
+Def: Def = <id: Ident> <val: ("=" <InitVal>)?> => Def { <> };
+
+InitVal: InitVal = <exp: Exp> => InitVal { <> };
+
 LVal: LVal = <id: Ident> => LVal { <> };
 
 BType: BType = "int" => BType::Int;
 
-Decl: Decl = {
-  ConstDecl => Decl::Const(<>),
-  VarDecl => Decl::Var(<>),
-}
-
-ConstDecl: ConstDecl = "const" <decl_type: BType> <def: ConstDef> <mut defs: ("," <ConstDef>)*> ";" => {
-  defs.insert(0, def);
-  ConstDecl { decl_type, defs }
-};
-
-ConstDef: ConstDef = <id: Ident> "=" <val: ConstInitVal> => ConstDef { <> };
-
-ConstInitVal: ConstInitVal = <exp: ConstExp> => ConstInitVal { <> };
-
-VarDecl: VarDecl = <decl_type: BType> <def: VarDef> <mut defs: ("," <VarDef>)*> ";" => {
-  defs.insert(0, def);
-  VarDecl { decl_type, defs }
-};
-
-VarDef: VarDef = <id: Ident> <val: ("=" <InitVal>)?> => VarDef { <> };
-
-InitVal: InitVal = <exp: Exp> => InitVal { <> };

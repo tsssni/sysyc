@@ -1,93 +1,207 @@
-fun @main(): i32 {
+fun @f_0(@a: i32): i32 {
 %entry:
   %ret = alloc i32
-  @u = alloc i32
-  @v = alloc i32
-  @w = alloc i32
-  @w_0 = alloc i32
-  @u_0 = alloc i32
-  @u_1 = alloc i32
+  %a = alloc i32
   jump %body
 
-%body_0:
-  %0 = and 1, 0
-  %1 = or 1, %0
-  %2 = ne 1, 4
-  %3 = eq 1, %2
-  %4 = gt 4, 5
-  %5 = ge %4, 1
-  %6 = le %5, 4
-  %7 = gt 11, %6
-  %8 = sub 514, 1919
-  %9 = mod 114, 80
-  %10 = div 6324, %9
-  %11 = mul %10, 19
-  %12 = add %8, %11
-  store %12, @u
-  %13 = add 0, 19
-  %14 = add 0, %13
-  %15 = eq 0, %14
-  %16 = sub 0, %15
-  store %16, @v
-  %17 = div 114, 19
-  store %17, @w
-  %18 = load @w
-  %19 = gt %18, 5
-  br %19, %then, %else
-
-%then:
-  %20 = mod 514, 19
-  store %20, @w
-  %21 = div 114, 19
-  store %21, @w_0
-  %22 = load @u
-  %23 = load @w_0
-  %24 = mul %22, %23
-  store %24, @u
-  jump %body_1
-
-%else:
-  jump %body_1
-
-%body_1:
-  %25 = load @w
-  %26 = gt %25, 5
-  br %26, %then_0, %else_0
-
-%then_0:
-  %27 = load @u
-  %28 = load @v
-  %29 = mul %27, %28
-  store %29, @u_0
-  jump %body_2
-
-%else_0:
-  %30 = load @u
-  %31 = load @w
-  %32 = mul %30, %31
-  store %32, @u_1
-  jump %body_2
-
-%body_2:
-
-%while_entry:
-  %33 = load @u
-  %34 = gt %33, 0
-  br %34, %while_body, %body
-
-%while_body:
-  %35 = load @u
-  %36 = sub %35, 1
-  store %36, @u
-  jump %while_entry
-
 %body:
-  %37 = load @w
-  %38 = mul %37, 414
+  store @a, %a
+  %0 = add 0, 19
+  %1 = add 0, %0
+  %2 = eq 0, %1
+  %3 = sub 0, %2
   jump %end
 
 %end:
-  store %38, %ret
-  %39 = load %ret
-  ret %39
+  store %3, %ret
+  ret %ret
+}
+
+fun @f_1(@a: i32, @b: i32): i32 {
+%entry:
+  %ret = alloc i32
+  %a = alloc i32
+  %b = alloc i32
+  %a_0 = alloc i32
+  jump %body
+
+%body_0:
+  store @a, %a
+  store @b, %b
+  %4 = load %a
+  %5 = gt %4, 5
+  br %5, %then, %else
+
+%then:
+  %6 = mod 514, 19
+  store %6, %a
+  %7 = div 114, 19
+  store %7, %a_0
+  %8 = load %b
+  %9 = load %a_0
+  %10 = mul %8, %9
+  store %10, %b
+  jump %body
+
+%else:
+  jump %body
+
+%body:
+  %11 = load %b
+  jump %end
+
+%end:
+  store %11, %ret
+  ret %ret
+}
+
+fun @f_2(): i32 {
+%entry:
+  %ret = alloc i32
+  %a = alloc i32
+  jump %body
+
+%body_0:
+  store 10, %a
+
+%while_entry:
+  %12 = load %a
+  %13 = gt %12, 0
+  br %13, %while_body, %body
+
+%while_body:
+  %14 = load %a
+  %15 = sub %14, 1
+  store %15, %a
+  jump %while_entry
+
+%body:
+  %16 = load %a
+  jump %end
+
+%end:
+  store %16, %ret
+  ret %ret
+}
+
+fun @f_3(@a: i32, @b: i32, @c: i32, @d: i32, @e: i32, @f: i32, @g: i32, @h: i32, @i: i32): i32 {
+%entry:
+  %ret = alloc i32
+  %a = alloc i32
+  %b = alloc i32
+  %c = alloc i32
+  %d = alloc i32
+  %e = alloc i32
+  %f = alloc i32
+  %g = alloc i32
+  %h = alloc i32
+  %i = alloc i32
+  jump %body
+
+%body:
+  store @a, %a
+  store @b, %b
+  store @c, %c
+  store @d, %d
+  store @e, %e
+  store @f, %f
+  store @g, %g
+  store @h, %h
+  store @i, %i
+  %17 = load %a
+  %18 = load %b
+  %19 = add %17, %18
+  %20 = load %c
+  %21 = add %19, %20
+  %22 = load %d
+  %23 = add %21, %22
+  %24 = load %e
+  %25 = add %23, %24
+  %26 = load %f
+  %27 = add %25, %26
+  %28 = load %g
+  %29 = add %27, %28
+  %30 = load %h
+  %31 = add %29, %30
+  %32 = load %i
+  %33 = add %31, %32
+  jump %end
+
+%end:
+  store %33, %ret
+  ret %ret
+}
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  %x = alloc i32
+  %y = alloc i32
+  %z = alloc i32
+  %u = alloc i32
+  %v = alloc i32
+  %w = alloc i32
+  %u_0 = alloc i32
+  %u_1 = alloc i32
+  jump %body
+
+%body_0:
+  %34 = and 1, 0
+  %35 = or 1, %34
+  store %35, %x
+  %36 = ne 1, 4
+  %37 = eq 1, %36
+  store %37, %y
+  %38 = gt 4, 5
+  %39 = ge %38, 1
+  %40 = le %39, 4
+  %41 = gt 11, %40
+  store %41, %z
+  %42 = sub 514, 1919
+  %43 = mod 114, 80
+  %44 = div 114, %43
+  %45 = mul %44, 19
+  %46 = add %42, %45
+  store %46, %u
+  %47 = call @f_0(19)
+  store %47, %v
+  %48 = div 114, 19
+  store %48, %w
+  %49 = load %w
+  %50 = load %u
+  %51 = call @f_1(%49, %50)
+  store %51, %w
+  %52 = load %w
+  %53 = gt %52, 5
+  br %53, %then, %else
+
+%then:
+  %54 = load %u
+  %55 = load %v
+  %56 = mul %54, %55
+  store %56, %u_0
+  jump %body
+
+%else:
+  %57 = load %u
+  %58 = load %w
+  %59 = mul %57, %58
+  store %59, %u_1
+  jump %body
+
+%body:
+  %60 = call @f_2()
+  store %60, %u
+  %61 = load %x
+  %62 = load %y
+  %63 = load %z
+  %64 = load %u
+  %65 = load %v
+  %66 = load %w
+  %67 = call @f_3(%61, %62, %63, %64, %65, %66, 1, 1, 4)
+  jump %end
+
+%end:
+  store %67, %ret
+  ret %ret
 }

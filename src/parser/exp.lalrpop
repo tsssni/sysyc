@@ -1,7 +1,5 @@
 Exp: Exp = <exp: LOrExp> => Exp { <> };
 
-ConstExp: ConstExp = <exp: Exp> => ConstExp { <> };
-
 PrimaryExp: PrimaryExp = {
   "(" <Exp> ")" => PrimaryExp::Exp(Box::new(<>)),
   LVal => PrimaryExp::LVal(<>),
@@ -10,6 +8,7 @@ PrimaryExp: PrimaryExp = {
 
 UnaryExp: UnaryExp = {
   PrimaryExp => UnaryExp::Primary(<>),
+  <id: Ident> "(" <params: (FuncRParams)?> ")" => UnaryExp::Func(id, params),
   <op: UnaryOp> <exp: UnaryExp> => UnaryExp::Unary(op, Box::new(exp)),
 }
 

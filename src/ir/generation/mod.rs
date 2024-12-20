@@ -17,7 +17,9 @@ impl<'ast> GenerateIR<'ast> for CompUnit {
     type Out = ();
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
-        self.func_def.generate(program, context)?;
+        for func_def in &self.func_defs {
+            func_def.generate(program, context)?;
+        }
         Ok(())
     }
 }

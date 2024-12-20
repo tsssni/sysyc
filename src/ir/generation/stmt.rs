@@ -1,7 +1,7 @@
 use crate::ir::GenerateIR;
 use crate::ir::{Result, Error};
 use crate::ir::context::Context;
-use crate::ast::*;
+use crate::ast::stmt::*;
 use koopa::ir::builder::LocalInstBuilder;
 use koopa::ir::Program;
 
@@ -75,14 +75,19 @@ impl<'ast> GenerateIR<'ast> for If {
         active_func.push_instruction(program, br);
 
         active_func.push_basic_block(program, then_bb);
+        context.push();
         self.then_block.generate(program, context)?;
+        context.pop();
+
         let active_func = context.active_function_mut();
         let then_jump = active_func.create_value(program).jump(next_bb);
         active_func.push_instruction(program, then_jump);
 
         active_func.push_basic_block(program, else_bb);
         if let Some(else_block) = &self.else_block {
+            context.push();
             else_block.generate(program, context)?;
+            context.pop();
         }
         let active_func = context.active_function_mut();
         let else_jump = active_func.create_value(program).jump(next_bb);
@@ -108,7 +113,10 @@ impl<'ast> GenerateIR<'ast> for While {
         active_func.push_instruction(program, br);
 
         active_func.push_basic_block(program, body_bb);
+        context.push();
         self.block.generate(program, context)?;
+        context.pop();
+
         let active_func = context.active_function_mut();
         let jump = active_func.create_value(program).jump(entry_bb);
         active_func.push_instruction(program, jump);
@@ -121,9 +129,6 @@ impl<'ast> GenerateIR<'ast> for While {
 impl<'ast> GenerateIR<'ast> for Return {
     type Out = ();
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
-        if let None = context.active_function().return_value() {
-            return Err(Error::ReturnInVoidFunction);
-        }
         let exp = self.exp.generate(program, context)?;
 
         let active_func = context.active_function_mut();
@@ -132,15 +137,11 @@ impl<'ast> GenerateIR<'ast> for Return {
         active_func.push_instruction(program, jump);
         active_func.push_basic_block(program, active_func.end());
 
-        let value = active_func.return_value().map(|alloc| {
-            let store = active_func.create_value(program).store(exp, alloc);
-            active_func.push_instruction(program, store);
+        let ret_val = active_func.return_value();
+        let store = active_func.create_value(program).store(exp, ret_val);
+        active_func.push_instruction(program, store);
 
-            let value = active_func.create_value(program).load(alloc);
-            active_func.push_instruction(program, value);
-            value
-        });
-        let ret = active_func.create_value(program).ret(value);
+        let ret = active_func.create_value(program).ret(Some(ret_val));
         active_func.push_instruction(program, ret);
         Ok(())
     }

@@ -14,13 +14,28 @@ impl<'ast> GenerateIR<'ast> for Exp {
     }
 }
 
+impl<'ast> GenerateIR<'ast> for ConstExp {
+    type Out = Value;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        self.exp.generate(program, context)
+    }
+}
+
 impl<'ast> GenerateIR<'ast> for PrimaryExp {
     type Out = Value;
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         match self {
             Self::Exp(exp) => exp.generate(program, context),
-            Self::LVal(lval) => lval.generate(program, context),
+            Self::LVal(lval) => {
+                println!("{}", &lval.id);
+                let lval = context.get_value(&lval.id)?;
+                let active_func = context.active_function();
+                let load = active_func.create_value(program).load(lval);
+                active_func.push_instruction(program, load);
+                Ok(load)
+            },
             Self::Number(number) => Ok(
                 context
                 .active_function()

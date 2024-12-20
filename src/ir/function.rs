@@ -7,11 +7,11 @@ pub struct FunctionInfo {
     entry: BasicBlock,
     end: BasicBlock,
     active: BasicBlock,
-    return_value: Option<Value>,
+    return_value: Value,
 }
 
 impl FunctionInfo {
-    pub fn new(function: Function, entry: BasicBlock, end: BasicBlock, return_value: Option<Value>) -> Self {
+    pub fn new(function: Function, entry: BasicBlock, end: BasicBlock, return_value: Value) -> Self {
         Self {
             function,
             entry,
@@ -29,7 +29,7 @@ impl FunctionInfo {
         self.end
     }
 
-    pub fn return_value(&self) -> Option<Value> {
+    pub fn return_value(&self) -> Value {
         self.return_value
     }
 
@@ -75,7 +75,7 @@ impl FunctionInfo {
             program
             .func_mut(self.function)
             .dfg_mut()
-            .set_value_name(alloc, Some(format!("@{}", name)));
+            .set_value_name(alloc, Some(format!("%{}", name)));
         }
         self.insert_instruction(program, self.entry, alloc);
         alloc

@@ -46,9 +46,9 @@ impl<'ast> Context<'ast> {
     }
 
     pub fn get_value(&self, id: &str) -> Result<Value> {
-        let mut block_i = self.value_blocks.len() - 1;
+        let mut block_i: i32 = (self.value_blocks.len() as i32) - 1;
         while block_i >= 0 {
-            match self.value_blocks[block_i].get(id) {
+            match self.value_blocks.get(block_i as usize).unwrap().get(id) {
                 Some(value) => return Ok(value.clone()),
                 None => block_i -= 1,
             }

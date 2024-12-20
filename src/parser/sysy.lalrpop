@@ -9,7 +9,7 @@ match {
   _
 }
 
-pub CompUnit: CompUnit = <func_def: FuncDef> => CompUnit { <> };
+pub CompUnit: CompUnit = <func_defs: (FuncDef)+> => CompUnit { <> };
 
 Number: i32 = <num: IntConst> => <>;
 
@@ -23,8 +23,6 @@ IntConst: i32 = {
 
 Exp: Exp = <exp: LOrExp> => Exp { <> };
 
-ConstExp: ConstExp = <exp: Exp> => ConstExp { <> };
-
 PrimaryExp: PrimaryExp = {
   "(" <Exp> ")" => PrimaryExp::Exp(Box::new(<>)),
   LVal => PrimaryExp::LVal(<>),
@@ -33,6 +31,7 @@ PrimaryExp: PrimaryExp = {
 
 UnaryExp: UnaryExp = {
   PrimaryExp => UnaryExp::Primary(<>),
+  <id: Ident> "(" <params: (FuncRParams)?> ")" => UnaryExp::Func(id, params),
   <op: UnaryOp> <exp: UnaryExp> => UnaryExp::Unary(op, Box::new(exp)),
 }
 
@@ -95,32 +94,19 @@ EqOp: EqOp = {
   "!=" => EqOp::Ne,
 }
 
+Decl: Decl = <decl_type: BType> <def: Def> <mut defs: ("," <Def>)*> ";" => {
+  defs.insert(0, def);
+  Decl { decl_type, defs }
+};
+
+Def: Def = <id: Ident> <val: ("=" <InitVal>)?> => Def { <> };
+
+InitVal: InitVal = <exp: Exp> => InitVal { <> };
+
 LVal: LVal = <id: Ident> => LVal { <> };
 
 BType: BType = "int" => BType::Int;
 
-Decl: Decl = {
-  ConstDecl => Decl::Const(<>),
-  VarDecl => Decl::Var(<>),
-}
-
-ConstDecl: ConstDecl = "const" <decl_type: BType> <def: ConstDef> <mut defs: ("," <ConstDef>)*> ";" => {
-  defs.insert(0, def);
-  ConstDecl { decl_type, defs }
-};
-
-ConstDef: ConstDef = <id: Ident> "=" <val: ConstInitVal> => ConstDef { <> };
-
-ConstInitVal: ConstInitVal = <exp: ConstExp> => ConstInitVal { <> };
-
-VarDecl: VarDecl = <decl_type: BType> <def: VarDef> <mut defs: ("," <VarDef>)*> ";" => {
-  defs.insert(0, def);
-  VarDecl { decl_type, defs }
-};
-
-VarDef: VarDef = <id: Ident> <val: ("=" <InitVal>)?> => VarDef { <> };
-
-InitVal: InitVal = <exp: Exp> => InitVal { <> };
 
 Block: Block = "{" <items: (<BlockItem>)*> "}" => Block { <> };
 
@@ -137,10 +123,20 @@ Stmt: Stmt = {
   "return" <exp: Exp> ";" => Stmt::Return(Return{ <> }),
 }
 
-FuncDef: FuncDef = {
-  <func_type: FuncType> <ident: Ident> "(" ")" <block: Block> => {
-    FuncDef { <> }
-  }
-}
+FuncDef: FuncDef = <func_type: FuncType> <ident: Ident> "(" <params: (FuncFParams)?> ")" <block: Block> => {
+  FuncDef { <> }
+};
 
 FuncType: FuncType = "int" => FuncType::Int;
+
+FuncFParams: FuncFParams = <param: FuncFParam> <mut params: ("," <FuncFParam>)*> => {
+  params.insert(0, param);
+  FuncFParams { params }
+};
+
+FuncFParam: FuncFParam = <param_type: BType> <id: Ident> => FuncFParam { <> };
+
+FuncRParams: FuncRParams = <param: Exp> <mut params: ("," <Exp>)*> => {
+  params.insert(0, param);
+  FuncRParams { params }
+};

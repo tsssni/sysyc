@@ -1,7 +1,7 @@
 use crate::ir::GenerateIR;
 use crate::ir::Result;
 use crate::ir::context::Context;
-use crate::ast::*;
+use crate::ast::var::*;
 use koopa::ir::builder::LocalInstBuilder;
 use koopa::ir::{Program, Value, Type};
 
@@ -9,17 +9,6 @@ impl<'ast> GenerateIR<'ast> for Decl {
     type Out = ();
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
-        match self {
-            Decl::Const(decl) => decl.generate(program, context),
-            Decl::Var(decl) => decl.generate(program, context),
-        }
-    }
-}
-
-impl<'ast> GenerateIR<'ast> for ConstDecl {
-    type Out = ();
-
-    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         for def in &self.defs {
             def.generate(program, context)?;
         }
@@ -27,36 +16,7 @@ impl<'ast> GenerateIR<'ast> for ConstDecl {
     }
 }
 
-impl<'ast> GenerateIR<'ast> for ConstDef {
-    type Out = ();
-
-    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
-        let val = self.val.generate(program, context)?;
-        context.insert_value(&self.id, val)?;
-        Ok(())
-    }
-}
-
-impl<'ast> GenerateIR<'ast> for ConstInitVal {
-    type Out = Value;
-
-    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
-        self.exp.generate(program, context)
-    }
-}
-
-impl<'ast> GenerateIR<'ast> for VarDecl {
-    type Out = ();
-
-    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
-        for def in &self.defs {
-            def.generate(program, context)?;
-        }
-        Ok(())
-    }
-}
-
-impl<'ast> GenerateIR<'ast> for VarDef {
+impl<'ast> GenerateIR<'ast> for Def {
     type Out = ();
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
@@ -77,5 +37,17 @@ impl<'ast> GenerateIR<'ast> for InitVal {
 
     fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
         self.exp.generate(program, context)
+    }
+}
+
+impl<'ast> GenerateIR<'ast> for LVal {
+    type Out = Value;
+
+    fn generate(&'ast self, program: &mut Program, context: &mut Context<'ast>) -> Result<Self::Out> {
+        let active_func = context.active_function();
+        let lval = context.get_value(&self.id)?;
+        let load = active_func.create_value(program).load(lval);
+        active_func.push_instruction(program, load);
+        Ok(load)
     }
 }

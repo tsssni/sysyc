@@ -1,13 +1,9 @@
-use super::var::LVal;
+use crate::ast::var::LVal;
+use crate::ast::func::FuncRParams;
 
 #[derive(Debug)]
 pub struct Exp {
     pub exp: LOrExp,
-}
-
-#[derive(Debug)]
-pub struct ConstExp {
-    pub exp: Exp,
 }
 
 #[derive(Debug)]
@@ -20,6 +16,7 @@ pub enum PrimaryExp {
 #[derive(Debug)]
 pub enum UnaryExp {
     Primary(PrimaryExp),
+    Func(String, Option<FuncRParams>),
     Unary(UnaryOp, Box<UnaryExp>),
 }
 

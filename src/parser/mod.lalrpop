@@ -9,7 +9,7 @@ match {
   _
 }
 
-pub CompUnit: CompUnit = <func_def: FuncDef> => CompUnit { <> };
+pub CompUnit: CompUnit = <func_defs: (FuncDef)+> => CompUnit { <> };
 
 Number: i32 = <num: IntConst> => <>;
 

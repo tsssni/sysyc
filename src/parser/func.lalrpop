@@ -1,7 +1,17 @@
-FuncDef: FuncDef = {
-  <func_type: FuncType> <ident: Ident> "(" ")" <block: Block> => {
-    FuncDef { <> }
-  }
-}
+FuncDef: FuncDef = <func_type: FuncType> <ident: Ident> "(" <params: (FuncFParams)?> ")" <block: Block> => {
+  FuncDef { <> }
+};
 
 FuncType: FuncType = "int" => FuncType::Int;
+
+FuncFParams: FuncFParams = <param: FuncFParam> <mut params: ("," <FuncFParam>)*> => {
+  params.insert(0, param);
+  FuncFParams { params }
+};
+
+FuncFParam: FuncFParam = <param_type: BType> <id: Ident> => FuncFParam { <> };
+
+FuncRParams: FuncRParams = <param: Exp> <mut params: ("," <Exp>)*> => {
+  params.insert(0, param);
+  FuncRParams { params }
+};
