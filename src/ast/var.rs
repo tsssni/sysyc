@@ -1,10 +1,14 @@
 use crate::ast::Exp;
 use crate::ast::exp::ConstExp;
-use crate::ast::BType;
 
 #[derive(Debug)]
 pub struct LVal {
     pub id: String,
+}
+
+#[derive(Debug)]
+pub enum BType {
+    Int
 }
 
 #[derive(Debug)]

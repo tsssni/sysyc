@@ -1,5 +1,7 @@
 LVal: LVal = <id: Ident> => LVal { <> };
 
+BType: BType = "int" => BType::Int;
+
 Decl: Decl = {
   ConstDecl => Decl::Const(<>),
   VarDecl => Decl::Var(<>),

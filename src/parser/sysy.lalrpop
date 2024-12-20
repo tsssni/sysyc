@@ -11,16 +11,6 @@ match {
 
 pub CompUnit: CompUnit = <func_def: FuncDef> => CompUnit { <> };
 
-FuncDef: FuncDef = {
-  <func_type: FuncType> <ident: Ident> "(" ")" <block: Block> => {
-    FuncDef { <> }
-  }
-}
-
-FuncType: FuncType = "int" => FuncType::Int;
-
-BType: BType = "int" => BType::Int;
-
 Number: i32 = <num: IntConst> => <>;
 
 Ident: String = r"[_a-zA-Z][_a-zA-Z0-9]*" => <>.to_string();
@@ -107,6 +97,8 @@ EqOp: EqOp = {
 
 LVal: LVal = <id: Ident> => LVal { <> };
 
+BType: BType = "int" => BType::Int;
+
 Decl: Decl = {
   ConstDecl => Decl::Const(<>),
   VarDecl => Decl::Var(<>),
@@ -144,3 +136,11 @@ Stmt: Stmt = {
   "while" "(" <cond:Exp> ")" <block: Block> => Stmt::While(While{ <> }),
   "return" <exp: Exp> ";" => Stmt::Return(Return{ <> }),
 }
+
+FuncDef: FuncDef = {
+  <func_type: FuncType> <ident: Ident> "(" ")" <block: Block> => {
+    FuncDef { <> }
+  }
+}
+
+FuncType: FuncType = "int" => FuncType::Int;

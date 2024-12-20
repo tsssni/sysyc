@@ -1,0 +1,7 @@
+FuncDef: FuncDef = {
+  <func_type: FuncType> <ident: Ident> "(" ")" <block: Block> => {
+    FuncDef { <> }
+  }
+}
+
+FuncType: FuncType = "int" => FuncType::Int;
